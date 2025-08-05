@@ -33,8 +33,8 @@ const Slideshow = () => {
           <h1 className="slide-title">{currentSlide.title}</h1>
           <div className="slide-main-content">
             {currentSlide.image && (
-              <div className="slide-image">
-                <img src={currentSlide.image} alt="Slide illustration" onError={(e) => console.error('Image failed to load:', e.target.src)} style={{width: '120px', height: 'auto'}} />
+              <div className="slide-image" style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                <img src={currentSlide.image} alt="Slide illustration" onError={(e) => console.error('Image failed to load:', e.target.src)} style={{width: '160px', height: 'auto'}} />
               </div>
             )}
             <div 
