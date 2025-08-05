@@ -35,7 +35,8 @@ export const slidesData = [
     `,
     answers: [
       { text: 'Tell me more', correct: true, next: 3 }
-    ]
+    ],
+    image: '/man.png'
   },
   {
     id: 3,

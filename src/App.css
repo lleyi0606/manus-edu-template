@@ -338,13 +338,7 @@
   background: #2196F3;
 }
 
-/* Scratcher Animation */
-.scratcher {
-  background-image: url('/scratcher-sprite.png');
-  background-size: 200% 2000%;
-  background-repeat: no-repeat;
-  pointer-events: none;
-}
+
 
 /* Responsive Design */
 @media (max-width: 768px) {

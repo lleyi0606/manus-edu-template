@@ -1,41 +1,17 @@
-import { useState, useCallback } from 'react'
+import { useState } from 'react'
 import { Button } from './ui/button'
 import { Progress } from './ui/progress'
-import Scratcher from './Scratcher'
 import { slidesData } from '../data/slides'
 
 const Slideshow = () => {
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0)
-  const [isTransitioning, setIsTransitioning] = useState(false)
-  const [showScratcher, setShowScratcher] = useState(false)
 
   const currentSlide = slidesData[currentSlideIndex]
-  const progressPercentage = ((currentSlideIndex + 1) / slidesData.length) * 100
-
-  const goToSlide = useCallback((targetIndex) => {
-    if (isTransitioning || targetIndex === currentSlideIndex) return
-    
-    setIsTransitioning(true)
-    setShowScratcher(true)
-  }, [isTransitioning, currentSlideIndex])
-
-  const handleScratcherComplete = useCallback(() => {
-    setShowScratcher(false)
-    setIsTransitioning(false)
-  }, [])
+  const progressPercentage = (currentSlideIndex / (slidesData.length - 1)) * 100
 
   const handleAnswerClick = (answer) => {
-    if (isTransitioning) return
-    
     if (answer.next !== undefined) {
-      setIsTransitioning(true)
-      setShowScratcher(true)
-      
-      setTimeout(() => {
-        setCurrentSlideIndex(answer.next)
-        setShowScratcher(false)
-        setIsTransitioning(false)
-      }, 1000)
+      setCurrentSlideIndex(answer.next)
     }
   }
 
@@ -46,12 +22,7 @@ const Slideshow = () => {
     const targetSlide = Math.floor((clickPercentage / 100) * slidesData.length)
     
     if (targetSlide >= 0 && targetSlide < slidesData.length && targetSlide !== currentSlideIndex) {
-      goToSlide(targetSlide)
-      setTimeout(() => {
-        setCurrentSlideIndex(targetSlide)
-        setShowScratcher(false)
-        setIsTransitioning(false)
-      }, 1000)
+      setCurrentSlideIndex(targetSlide)
     }
   }
 
@@ -60,17 +31,23 @@ const Slideshow = () => {
       <div className="slideshow-content">
         <div className="slide">
           <h1 className="slide-title">{currentSlide.title}</h1>
-          <div 
-            className="slide-content"
-            dangerouslySetInnerHTML={{ __html: currentSlide.content }}
-          />
+          <div className="slide-main-content">
+            {currentSlide.image && (
+              <div className="slide-image">
+                <img src={currentSlide.image} alt="Slide illustration" onError={(e) => console.error('Image failed to load:', e.target.src)} style={{width: '120px', height: 'auto'}} />
+              </div>
+            )}
+            <div 
+              className="slide-content"
+              dangerouslySetInnerHTML={{ __html: currentSlide.content }}
+            />
+          </div>
           
           <div className="slide-answers">
             {currentSlide.answers.map((answer, index) => (
               <Button
                 key={index}
                 onClick={() => handleAnswerClick(answer)}
-                disabled={isTransitioning}
                 className={`answer-button ${answer.correct ? 'correct' : ''}`}
                 variant="outline"
                 size="lg"
@@ -95,12 +72,9 @@ const Slideshow = () => {
                 className={`progress-dot ${index === currentSlideIndex ? 'active' : ''} ${index < currentSlideIndex ? 'completed' : ''}`}
                 onClick={(e) => {
                   e.stopPropagation()
-                  goToSlide(index)
-                  setTimeout(() => {
+                  if (index !== currentSlideIndex) {
                     setCurrentSlideIndex(index)
-                    setShowScratcher(false)
-                    setIsTransitioning(false)
-                  }, 1000)
+                  }
                 }}
               />
             ))}
@@ -108,10 +82,7 @@ const Slideshow = () => {
         </div>
       </div>
 
-      <Scratcher 
-        isVisible={showScratcher} 
-        onAnimationComplete={handleScratcherComplete}
-      />
+
     </div>
   )
 }
